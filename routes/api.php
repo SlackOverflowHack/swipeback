@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -16,9 +18,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('throttle:clientApp')->post('login', 'App\Http\Controllers\ApiController@createApiToken');
 
-Route::prefix('user')->middleware('auth:api', 'throttle:clientApp')->group(function() {
-        Route::get('/', function (Request $request) {
-                return $request->user();
-        });
-});
+Route::prefix('user')->middleware('throttle:clientApp')->group(function() {
 
+    Route::post('register', [UsersController::class, 'register']);
+
+    Route::middleware('auth:api')->group(function() {
+        Route::get('/', function (Request $request) {
+            return $request->user();
+        });
+    });
+});
