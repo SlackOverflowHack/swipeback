@@ -36,13 +36,6 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        BindFailureListener::setErrorHandler(function ($message, $code = null) {
-            if ($code == '773') {
-                // The users password has expired. Redirect them.
-                abort(redirect('/password-reset'));
-            }
-        });
-
         // add homes api token guard
         Auth::viaRequest('token', function(Request $request) {
 
