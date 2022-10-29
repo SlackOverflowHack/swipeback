@@ -4,16 +4,10 @@ FROM docker.goebel.app/jonas/laraveldocker:8
 # add healthcheck
 HEALTHCHECK CMD curl --fail http://localhost:80 || exit 1
 
-# install nodejs & npm for vue blade compiling
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - && apt-get install -yq nodejs build-essential
-
 # Set the working directory
 WORKDIR /var/www/html
 
 RUN mkdir -p bootstrap/cache
-
-# create folders if they dont exist
-RUN mkdir -p database/seeds
 
 # copy env if no env defined
 RUN if test -f "/var/www/html/.env"; then echo "using existing .env file"; else cp "/var/www/html/.env-docker" "/var/www/html/.env"; fi
@@ -26,11 +20,6 @@ RUN apt install -y php7.4-ldap php7.4-mongodb
 COPY . .
 
 RUN composer update
-
-# patch files from directorytree generating problems with openldap
-RUN mkdir -p /var/www/html/vendor/directorytree/ldaprecord/src/Models/ActiveDirectory/Scopes
-RUN cp /var/www/html/vendorpatch/directorytree/ldaprecord/src/Models/ActiveDirectory/User.php /var/www/html/vendor/directorytree/ldaprecord/src/Models/ActiveDirectory/User.php
-RUN cp /var/www/html/vendorpatch/directorytree/ldaprecord/src/Models/ActiveDirectory/Scopes/RejectComputerObjectClass.php /var/www/html/vendor/directorytree/ldaprecord/src/Models/ActiveDirectory/Scopes/RejectComputerObjectClass.php
 
 RUN cp /var/www/html/docker/apacheConf.conf /etc/apache2/sites-enabled/000-default.conf
 
@@ -53,6 +42,4 @@ RUN chown -R www-data:www-data /var/www/html
 EXPOSE 80
 
 # Run the specified command within the container.
-#CMD ["/bin/bash" , "docker/start.sh"]
 CMD /bin/bash docker/start.sh
-#CMD /bin/bash docker/wait-for-it.sh mysql:3306 -- /bin/bash", docker/start.sh
