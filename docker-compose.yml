@@ -1,0 +1,22 @@
+version: '3.2'
+
+volumes:
+  mysql:
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: docker/Dockerfile
+        # used for gitlab ci to deploy automatically
+        image: swipeback
+
+        ports:
+            - "80:80"
+        volumes:
+            - "./.env:/var/www/html/.env"
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.lamawebdev.entrypoints=websecure"
+            - "traefik.http.routers.lamawebdev.tls=true"
+            - "traefik.http.routers.lamawebdev.rule=Host(`swipeback.fulda.dev`)"
