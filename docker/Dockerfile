@@ -1,5 +1,53 @@
-# Use the private prebuilt laravel image
-FROM docker.goebel.app/jonas/laraveldocker:8
+# Use the official image as a parent image
+FROM ubuntu
+
+# Set the working directory
+WORKDIR /var/www/html
+
+# disable frontend terminal questions while installing apt packages (problem with php tzdata)
+ARG DEBIAN_FRONTEND=noninteractive
+
+# set the correct timezone
+ENV TZ=Europe/Berlin
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Run the command inside your image filesystem
+RUN apt-get update
+RUN apt-get upgrade -y
+RUN apt-get install -y software-properties-common git
+RUN add-apt-repository ppa:ondrej/php -y
+RUN apt-get install -y php7.4 php7.4-common php7.4-dom php7.4-mbstring php7.4-xsl zip unzip php7.4-zip php7.4-mysql curl php7.4-curl php7.4-gd php7.4-pcov sqlite3 php7.4-sqlite3
+RUN apt-get update
+
+# install composer
+RUN curl -sS https://getcomposer.org/installer -o composer-setup.php
+RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+RUN rm composer-setup.php
+
+# apache2 needs to be able to handle / links
+RUN a2enmod rewrite
+
+# enable proxy for surveillance camera
+RUN a2enmod proxy && a2enmod proxy_http && a2enmod proxy_html && a2enmod headers
+
+# remove the default apache index.html
+RUN rm index.html
+
+# Automatically install laravel on top of the needed files
+RUN composer create-project laravel/laravel:8 .
+RUN composer install
+
+# create folders if they dont exist
+RUN mkdir -p bootstrap/cache
+RUN mkdir -p storage/logs/
+RUN mkdir -p storage/framework/sessions
+RUN mkdir -p storage/framework/views
+RUN mkdir -p storage/framework/cache
+
+# remove example tests left from laravel/laravel
+RUN rm /var/www/html/tests/Unit/ExampleTest.php
+RUN rm /var/www/html/tests/Feature/ExampleTest.php
+
 
 # add healthcheck
 HEALTHCHECK CMD curl --fail http://localhost:80 || exit 1
