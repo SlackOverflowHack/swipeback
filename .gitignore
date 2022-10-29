@@ -22,3 +22,4 @@ storage/logs/
 python/__pycache__
 python/models/__pycache__
 mount
+slackoverflow-*.json
