@@ -21,9 +21,10 @@ Route::middleware('throttle:clientApp')->post('login', 'App\Http\Controllers\Api
 Route::prefix('user')->middleware('throttle:clientApp')->group(function() {
 
     Route::post('register', [UsersController::class, 'register']);
+    Route::post('update', [UsersController::class, 'update']);
 
     Route::middleware('auth:api')->group(function() {
-        Route::get('/', function (Request $request) {
+        Route::get('/', function(Request $request) {
             return $request->user();
         });
     });
