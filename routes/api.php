@@ -17,15 +17,16 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('throttle:clientApp')->post('login', 'App\Http\Controllers\ApiController@createApiToken');
+Route::post('/user/register', [UsersController::class, 'register']);
 
-Route::prefix('user')->middleware('throttle:clientApp')->group(function() {
+Route::middleware('auth:api')->group(function() {
+    Route::get('/', function(Request $request) {
+        return $request->user();
+    });
 
-    Route::post('register', [UsersController::class, 'register']);
-    Route::post('update', [UsersController::class, 'update']);
-
-    Route::middleware('auth:api')->group(function() {
-        Route::get('/', function(Request $request) {
-            return $request->user();
-        });
+    Route::prefix('user')->middleware('throttle:clientApp')->group(function() {
+        Route::post('update', [UsersController::class, 'update']);
     });
 });
+
+
