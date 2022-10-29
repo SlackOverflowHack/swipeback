@@ -16,7 +16,7 @@ RUN apt-get update
 RUN apt-get upgrade -y
 RUN apt-get install -y software-properties-common git
 RUN add-apt-repository ppa:ondrej/php -y
-RUN apt-get install -y php7.4 php7.4-common php7.4-dom php7.4-mbstring php7.4-xsl zip unzip php7.4-zip php7.4-mysql curl php7.4-curl php7.4-gd php7.4-pcov sqlite3 php7.4-sqlite3
+RUN apt-get install -y php7.4 php7.4-common php7.4-dom php7.4-mbstring php7.4-xsl zip unzip php7.4-zip php7.4-mysql curl php7.4-curl php7.4-gd php7.4-pcov php7.4-grpc
 RUN apt-get update
 
 # install composer
