@@ -4,6 +4,10 @@
 
 This application handles all write-related transactions to the Firestore Database inside our firebase application.
 
+## Deployment
+Docker images are built using our private gitlab instance ('git.goebel.app') and uploaded to its internal container registry.
+The images are deployed inside our kubernetes cluster [see the kubernetes repository](https://github.com/SlackOverflowHack/k8s-deployment).
+
 ## Connect from php to Firebase FireStore
 
 https://developers.google.com/identity/protocols/oauth2/service-account#creatinganaccount
