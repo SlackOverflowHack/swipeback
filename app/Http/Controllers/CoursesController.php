@@ -269,7 +269,7 @@ class CoursesController extends Controller {
         abort(500, 'error while adding single missing appointment member to course');
     }
 
-    public function removeMissingSingleAppointmentMember(Request $request) {
+    public function removeSingleMissingAppointmentMember(Request $request) {
         $request->validate([
             'course_id' => 'required|string|max:255',
             'date' => 'required'
