@@ -23,7 +23,7 @@ amd64:app-build:
     - docker-compose build app
     
     # upload image to testing server with special name
-    - docker tag swipeback "CI_REGISTRY_IMAGE:$CI_PIPELINE_IID"
+    - docker tag swipeback "$CI_REGISTRY_IMAGE:$CI_PIPELINE_IID"
     - docker push "$CI_REGISTRY_IMAGE:$CI_PIPELINE_IID"
   tags:
     - amd64
