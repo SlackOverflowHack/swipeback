@@ -20,7 +20,6 @@ POST /api/user/register
 ```
 POST /api/user/update
 
-'id'        => 'required|string|max:255',
 'email', 
 'password', 
 'firstname', 
@@ -32,6 +31,11 @@ POST /api/user/update
 ```
 POST /api/course/addInterestedMember
 
-'id'        => 'required|string|max:255',
+'course_id' => 'required|string|max:255',
+```
+
+```
+POST /api/course/signupMember
+
 'course_id' => 'required|string|max:255',
 ```
