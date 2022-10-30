@@ -20,11 +20,11 @@ POST /api/user/register
 ```
 POST /api/user/update
 
-'email', 
-'password', 
-'firstname', 
-'lastname', 
-'birthDate'
+'email',        => optional
+'password',     => optional
+'firstname',    => optional
+'lastname',     => optional
+'birthDate'     => optional
 ```
 
 ### course

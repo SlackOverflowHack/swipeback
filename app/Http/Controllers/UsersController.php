@@ -23,13 +23,9 @@ class UsersController extends Controller {
     }
 
     public function update(Request $request) {
-        $request->validate([
-            'id' => 'required|string|max:255',
-        ]);
-
         $firestore = new FirestoreClient();
 
-        $user = $firestore->collection('users')->document($request->id);
+        $user = $firestore->collection('users')->document($request->session()->get('userID'));
         if ($user->snapshot()->exists()) {
             $data = $request->only(['email', 'password', 'firstname', 'lastname', 'birthDate']);
 

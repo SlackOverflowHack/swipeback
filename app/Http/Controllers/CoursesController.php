@@ -20,8 +20,8 @@ class CoursesController extends Controller {
             if (isset($courseData['interestedMembers'])) {
                 $interestedMembers = $courseData['interestedMembers'];
             }
-            if (!array_search($request->id, $interestedMembers)) {
-                $interestedMembers[] = $request->id;
+            if (!array_search($request->session()->get('userID'), $interestedMembers)) {
+                $interestedMembers[] = $request->session()->get('userID');
             }
 
             $response = $course->set([
@@ -49,14 +49,14 @@ class CoursesController extends Controller {
             if (isset($courseData['interestedMembers'])) {
                 $interestedMembers = $courseData['interestedMembers'];
             }
-            unset($interestedMembers[array_search($request->id, $interestedMembers)]);
+            unset($interestedMembers[array_search($request->session()->get('userID'), $interestedMembers)]);
 
             $permanentMembers = [];
             if (isset($courseData['permanentMembers'])) {
                 $permanentMembers = $courseData['permanentMembers'];
             }
-            if (!array_search($request->id, $permanentMembers)) {
-                $permanentMembers[] = $request->id;
+            if (!array_search($request->session()->get('userID'), $permanentMembers)) {
+                $permanentMembers[] = $request->session()->get('userID');
             }
 
             $response = $course->set([
