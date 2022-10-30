@@ -8,7 +8,6 @@ class GuzzleRequest {
     private $url;
     private $response;
     private $headers;
-    // private $errorsAllowed = false;
 
     public function __construct($url) {
         $this->url = $url;

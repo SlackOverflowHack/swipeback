@@ -19,8 +19,11 @@ https://developers.google.com/identity/protocols/oauth2/service-account#creating
 ```
 POST /api/user/register
 
-'email'    => 'required|string|max:255',
-'password' => 'required|string|max:255',
+'email'     => 'required|email|max:255',
+'password'  => 'required|string|max:255',
+'firstname' => 'required|string|max:255',
+'lastname'  => 'required|string|max:255',
+'birthDate' => 'required'
 ```
 
 ## API with authentication
@@ -30,8 +33,6 @@ POST /api/user/register
 ```
 POST /api/user/update
 
-'email',        => optional
-'password',     => optional
 'firstname',    => optional
 'lastname',     => optional
 'birthDate'     => optional

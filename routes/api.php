@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('throttle:clientApp')->post('login', 'App\Http\Controllers\ApiController@createApiToken');
-Route::post('/user/register', [UsersController::class, 'register']);
+Route::middleware('session')->post('/user/register', [UsersController::class, 'register']);
 
 Route::middleware(['session', 'auth:fireuser', 'throttle:clientApp'])->group(function() {
     Route::get('/', function(Request $request) {

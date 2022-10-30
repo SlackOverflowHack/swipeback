@@ -2,39 +2,64 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\GuzzleRequest;
 use Google\Cloud\Firestore\FirestoreClient;
 use Illuminate\Http\Request;
 
-class UsersController extends Controller {
-    public function register(Request $request) {
-        $request->validate([
-            'email'    => 'required|string|max:255',
-            'password' => 'required|string|max:255',
-        ]);
+class UsersController extends Controller
+{
+    public function register(Request $request)
+    {
+        $fields = [
+            'email'     => 'required|email|max:255',
+            'password'  => 'required|string|max:255',
+            'firstname' => 'required|string|max:255',
+            'lastname'  => 'required|string|max:255',
+            'birthDate' => 'required'
+        ];
 
-        $data = $request->only(['email', 'password']);
+        $request->validate($fields);
+        $request->only(array_keys($fields));
 
-        $firestore = new FirestoreClient();
-        $response = $firestore->collection('users')->newDocument()->set($data);
+        // user has all necessary information
 
-        if (isset($response['updateTime'])) return 200;
+        // register him at firebase auth manager
+        $newUserData = $this->registerFirebaseUser($request->email, $request->password);
 
-        abort(500, 'error while registering user');
+        // save new user id
+        $request->session()->flash('userID', $newUserData->localId);
+
+        // set firestore collection
+        $this->update($request);
+
+        return $newUserData;
     }
 
-    public function update(Request $request) {
+    private function registerFirebaseUser($email, $password)
+    {
+        $apiKey = env('FIREBASE_API_KEY');
+        $url = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' . $apiKey;
+        $req = new GuzzleRequest($url);
+        $json = $req->post(["email" => $email, "password" => $password]);
+
+        $response = json_decode($json);
+
+        if (isset($response->error)) abort($response->error->code, $response->error->message);
+
+        return $response;
+    }
+
+    public function update(Request $request)
+    {
         $firestore = new FirestoreClient();
 
         $user = $firestore->collection('users')->document($request->session()->get('userID'));
-        if ($user->snapshot()->exists()) {
-            $data = $request->only(['email', 'password', 'firstname', 'lastname', 'birthDate']);
+        $data = $request->only(['firstname', 'lastname', 'birthDate']);
 
-            $response = $user->set($data, ['merge' => true]);
-            if (isset($response['updateTime'])) {
-                return 200;
-            };
-        }
+        $response = $user->set($data, ['merge' => true]);
 
-        abort(500, 'error while updating user');
+        if (!isset($response['updateTime'])) abort(500, "error updating user information");
+
+        return 200;
     }
 }
