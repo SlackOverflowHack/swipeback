@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CoursesController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -17,14 +18,17 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('throttle:clientApp')->post('login', 'App\Http\Controllers\ApiController@createApiToken');
+Route::post('/user/register', [UsersController::class, 'register']);
 
-Route::prefix('user')->middleware('session', 'throttle:clientApp')->group(function() {
+Route::middleware('session', 'auth:fireuser', 'throttle:clientApp')->group(function() {
+    Route::get('/', function(Request $request) {
+        return $request->user();
+    });
 
-    Route::post('register', [UsersController::class, 'register']);
-
-    Route::middleware('auth:fireuser')->group(function() {
-        Route::get('/id', function (Request $request) {
-            return $request->session()->get('userID');
-        });
+    Route::prefix('user')->group(function() {
+        Route::post('update', [UsersController::class, 'update']);
+    });
+    Route::prefix('course')->group(function() {
+        Route::post('addInterestedMember', [CoursesController::class, 'addInterestedMember']);
     });
 });
