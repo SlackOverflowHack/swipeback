@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CoursesController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
@@ -35,5 +36,16 @@ Route::middleware(['session', 'auth:fireuser', 'throttle:clientApp'])->group(fun
         Route::post('addPermanentMember', [CoursesController::class, 'addPermanentMember']);
         Route::post('removeInterestedMember', [CoursesController::class, 'removeInterestedMember']);
         Route::post('removePermanentMember', [CoursesController::class, 'removePermanentMember']);
+
+        Route::prefix('appointments')->group(function() {
+
+            Route::post('add', [CoursesController::class, 'addAppointment']);
+
+            Route::post('addMember', [CoursesController::class, 'addAppointmentMember']);
+            Route::post('removeMember', [CoursesController::class, 'removeAppointmentMember']);
+
+            Route::post('addSingleMissingMember', [CoursesController::class, 'addSingleMissingAppointmentMember']);
+            Route::post('removeSingleMissingMember', [CoursesController::class, 'removeSingleMissingAppointmentMember']);
+        });
     });
 });

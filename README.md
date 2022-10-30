@@ -73,30 +73,54 @@ POST /api/course/removePermanentMember
 ```
 POST /api/course/add
 
-'guid'                    => 'required|string|max:255',
-'number'                  => 'required|string|max:255',
-'name'                    => 'required|string|max:255',
-'untertitel'              => 'required|string|max:255',
-'level'                   => 'string|max:255',
-'dauer'                   => 'numeric',
-'beginn_datum'            => 'required',
-'ende_datum'              => '',
-'anzahl_termine'          => 'integer',
+'titel'                   => 'required|string|max:255',
+'beschreibung'            => 'required|string|max:255',
+'schlagwoerter'           => 'required|array',
+'kontakt'                 => 'required|array',
+'ort'                     => 'required|array',
+'termine'                 => 'required|array',
+'zielgruppe'              => 'required|array',
+'maxanzahl'               => 'required|int',
 'intern'                  => 'required|boolean',
-'minimale_teilnehmerzahl' => 'integer',
-'maximale_teilnehmerzahl' => 'integer',
-'schlagwort'              => 'array',
-'zielgruppe'              => 'array',
-'zertifikat'              => 'array',
-'text'                    => 'required|array',
-'veranstaltungsort'       => 'required|array',
-'termin'                  => 'array',
-'preis'                   => 'array',
-'dozent'                  => 'array',
-'webadresse'              => 'required|array',
-'dvv_kategorie'           => 'required|array',
 'wochentag'               => 'array',
 'interestedMembers'       => 'array',
 'uninterestedMembers'     => 'array',
-'permanentMembers'        => 'array',
+'permanentMembers'        => 'array'
+```
+
+### appointments
+
+```
+POST /api/course/appointments/add
+
+'course_id' => 'required|string|max:255',
+'date'      => 'required'
+```
+
+```
+POST /api/course/appointments/addMember
+
+'course_id' => 'required|string|max:255',
+'date'      => 'required'
+```
+
+```
+POST /api/course/appointments/removeMember
+
+'course_id' => 'required|string|max:255',
+'date'      => 'required'
+```
+
+```
+POST /api/course/appointments/addSingleMissingMember
+
+'course_id' => 'required|string|max:255',
+'date'      => 'required'
+```
+
+```
+POST /api/course/appointments/removeSingleMissingMember
+
+'course_id' => 'required|string|max:255',
+'date'      => 'required'
 ```
