@@ -1,13 +1,17 @@
 # SwipeBack
+
 ## The backend for swiper
 
 This application handles all write-related transactions to the Firestore Database inside our firebase application.
 
 ## Connect from php to Firebase FireStore
+
 https://developers.google.com/identity/protocols/oauth2/service-account#creatinganaccount
 
 ## API without authentication
+
 ### user
+
 ```
 POST /api/user/register
 
@@ -16,7 +20,9 @@ POST /api/user/register
 ```
 
 ## API with authentication
+
 ### user
+
 ```
 POST /api/user/update
 
@@ -28,6 +34,7 @@ POST /api/user/update
 ```
 
 ### course
+
 ```
 POST /api/course/addInterestedMember
 
@@ -41,7 +48,13 @@ POST /api/course/removeInterestedMember
 ```
 
 ```
-POST /api/course/signupMember
+POST /api/course/addPermanentMember
+
+'course_id' => 'required|string|max:255',
+```
+
+```
+POST /api/course/removePermanentMember
 
 'course_id' => 'required|string|max:255',
 ```

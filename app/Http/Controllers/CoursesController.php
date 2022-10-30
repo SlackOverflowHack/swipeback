@@ -103,4 +103,43 @@ class CoursesController extends Controller {
 
         abort(500, 'error while removing interested member from course');
     }
+
+    public function removePermanentMember(Request $request) {
+        $request->validate([
+            'course_id' => 'required|string|max:255',
+        ]);
+
+        $firestore = new FirestoreClient();
+
+        $course = $firestore->collection('courses')->document($request->course_id);
+        if ($course->snapshot()->exists()) {
+            $courseData = $course->snapshot()->data();
+            $interestedMembers = [];
+            if (isset($courseData['interestedMembers'])) {
+                $interestedMembers = $courseData['interestedMembers'];
+            }
+            if (!array_search($request->session()->get('userID'), $interestedMembers)) {
+                $interestedMembers[] = $request->session()->get('userID');
+            }
+
+            $permanentMembers = [];
+            if (isset($courseData['permanentMembers'])) {
+                $permanentMembers = $courseData['permanentMembers'];
+            }
+            $_array_pos = array_search($request->session()->get('userID'), $permanentMembers);
+            if ($_array_pos !== false) {
+                unset($permanentMembers[$_array_pos]);
+            }
+
+            $response = $course->set([
+                'interestedMembers' => $interestedMembers,
+                'permanentMembers'  => $permanentMembers
+            ], ['merge' => true]);
+            if (isset($response['updateTime'])) {
+                return 200;
+            };
+        }
+
+        abort(500, 'error while removing permanent member from course');
+    }
 }
