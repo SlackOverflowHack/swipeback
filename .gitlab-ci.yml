@@ -1,0 +1,45 @@
+image: docker:22.06-rc-dind
+
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: "/certs"
+
+services:
+  - docker:22.06-rc-dind
+
+stages:
+  - build
+  - deploy
+
+amd64:app-build:
+  stage: build
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "master" || $CI_COMMIT_REF_NAME == "dev" || $CI_PIPELINE_SOURCE == "web"'
+  script:
+    # login to dowload laravel base image
+    - echo "$CI_REGISTRY_PASSWORD" | docker login --username $CI_REGISTRY_USER --password-stdin "$CI_REGISTRY"
+
+    # build image
+    - docker-compose build app
+    
+    # upload image to testing server with special name
+    - docker tag website_app "$CI_REGISTRY:$CI_PIPELINE_IID"
+    - docker push "$CI_REGISTRY:$CI_PIPELINE_IID"
+  tags:
+    - amd64
+
+amd64:app-deploy:
+  stage: deploy
+  only:
+    - tags
+  needs: ["amd64:app-build"]
+  script:
+    # download image from testing server
+    - echo "$CI_REGISTRY_PASSWORD" | docker login --username $CI_REGISTRY_USER --password-stdin "$CI_REGISTRY"
+    - docker pull "$CI_REGISTRY:$CI_PIPELINE_IID"
+
+    # upload with tag
+    - docker tag "$CI_REGISTRY:$CI_PIPELINE_IID" "$CI_REGISTRY:$CI_COMMIT_TAG"
+    - docker push "$CI_REGISTRY:$CI_COMMIT_TAG"
+  tags:
+    - amd64
