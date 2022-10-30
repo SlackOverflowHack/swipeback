@@ -14,7 +14,7 @@ stages:
 amd64:app-build:
   stage: build
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "master" || $CI_COMMIT_REF_NAME == "dev" || $CI_PIPELINE_SOURCE == "web"'
+    - if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME == "dev" || $CI_PIPELINE_SOURCE == "web"'
   script:
     # login to dowload laravel base image
     - echo "$CI_REGISTRY_PASSWORD" | docker login --username $CI_REGISTRY_USER --password-stdin "$CI_REGISTRY"
