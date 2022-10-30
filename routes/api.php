@@ -29,6 +29,7 @@ Route::middleware(['session', 'auth:fireuser', 'throttle:clientApp'])->group(fun
         Route::post('update', [UsersController::class, 'update']);
     });
     Route::prefix('course')->group(function() {
+        Route::post('add', [CoursesController::class, 'add']);
         Route::post('addInterestedMember', [CoursesController::class, 'addInterestedMember']);
         Route::post('addUninterestedMember', [CoursesController::class, 'addUninterestedMember']);
         Route::post('addPermanentMember', [CoursesController::class, 'addPermanentMember']);
