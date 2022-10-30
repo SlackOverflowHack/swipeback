@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CoursesController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,9 @@ Route::middleware('auth:api')->group(function() {
 
     Route::prefix('user')->middleware('throttle:clientApp')->group(function() {
         Route::post('update', [UsersController::class, 'update']);
+    });
+    Route::prefix('course')->middleware('throttle:clientApp')->group(function() {
+        Route::post('addInterestedMember', [CoursesController::class, 'addInterestedMember']);
     });
 });
 

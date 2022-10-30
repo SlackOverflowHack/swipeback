@@ -33,7 +33,7 @@ class UsersController extends Controller {
         if ($user->snapshot()->exists()) {
             $data = $request->only(['email', 'password', 'firstname', 'lastname', 'birthDate']);
 
-            $response = $user->set($data);
+            $response = $user->set($data, ['merge' => true]);
             if (isset($response['updateTime'])) {
                 return 200;
             };
