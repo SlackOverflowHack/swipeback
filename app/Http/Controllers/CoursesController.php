@@ -35,6 +35,55 @@ class CoursesController extends Controller {
         abort(500, 'error while adding interested member to course');
     }
 
+    public function addUninterestedMember(Request $request) {
+        $request->validate([
+            'course_id' => 'required|string|max:255',
+        ]);
+
+        $firestore = new FirestoreClient();
+
+        $course = $firestore->collection('courses')->document($request->course_id);
+        if ($course->snapshot()->exists()) {
+            $courseData = $course->snapshot()->data();
+            $uninterestedMembers = [];
+            if (isset($courseData['uninterestedMembers'])) {
+                $uninterestedMembers = $courseData['uninterestedMembers'];
+            }
+            if (!array_search($request->session()->get('userID'), $uninterestedMembers)) {
+                $uninterestedMembers[] = $request->session()->get('userID');
+            }
+
+            $interestedMembers = [];
+            if (isset($courseData['interestedMembers'])) {
+                $interestedMembers = $courseData['interestedMembers'];
+            }
+            $_array_pos = array_search($request->session()->get('userID'), $interestedMembers);
+            if ($_array_pos !== false) {
+                unset($interestedMembers[$_array_pos]);
+            }
+
+            $permanentMembers = [];
+            if (isset($courseData['permanentMembers'])) {
+                $permanentMembers = $courseData['permanentMembers'];
+            }
+            $_array_pos = array_search($request->session()->get('userID'), $permanentMembers);
+            if ($_array_pos !== false) {
+                unset($permanentMembers[$_array_pos]);
+            }
+
+            $response = $course->set([
+                'uninterestedMembers' => $uninterestedMembers,
+                'interestedMembers'   => $interestedMembers,
+                'permanentMembers'    => $permanentMembers,
+            ], ['merge' => true]);
+            if (isset($response['updateTime'])) {
+                return 200;
+            };
+        }
+
+        abort(500, 'error while adding uninterested member to course');
+    }
+
     public function signupMember(Request $request) {
         $request->validate([
             'course_id' => 'required|string|max:255',
