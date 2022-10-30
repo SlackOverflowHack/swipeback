@@ -35,6 +35,12 @@ POST /api/course/addInterestedMember
 ```
 
 ```
+POST /api/course/removeInterestedMember
+
+'course_id' => 'required|string|max:255',
+```
+
+```
 POST /api/course/signupMember
 
 'course_id' => 'required|string|max:255',

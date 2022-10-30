@@ -49,7 +49,10 @@ class CoursesController extends Controller {
             if (isset($courseData['interestedMembers'])) {
                 $interestedMembers = $courseData['interestedMembers'];
             }
-            unset($interestedMembers[array_search($request->session()->get('userID'), $interestedMembers)]);
+            $_array_pos = array_search($request->session()->get('userID'), $interestedMembers);
+            if ($_array_pos !== false) {
+                unset($interestedMembers[$_array_pos]);
+            }
 
             $permanentMembers = [];
             if (isset($courseData['permanentMembers'])) {
@@ -69,5 +72,35 @@ class CoursesController extends Controller {
         }
 
         abort(500, 'error while adding permanent member to course');
+    }
+
+    public function removeInterestedMember(Request $request) {
+        $request->validate([
+            'course_id' => 'required|string|max:255',
+        ]);
+
+        $firestore = new FirestoreClient();
+
+        $course = $firestore->collection('courses')->document($request->course_id);
+        if ($course->snapshot()->exists()) {
+            $courseData = $course->snapshot()->data();
+            $interestedMembers = [];
+            if (isset($courseData['interestedMembers'])) {
+                $interestedMembers = $courseData['interestedMembers'];
+            }
+            $_array_pos = array_search($request->session()->get('userID'), $interestedMembers);
+            if ($_array_pos !== false) {
+                unset($interestedMembers[$_array_pos]);
+            }
+
+            $response = $course->set([
+                'interestedMembers' => $interestedMembers,
+            ], ['merge' => true]);
+            if (isset($response['updateTime'])) {
+                return 200;
+            };
+        }
+
+        abort(500, 'error while removing interested member from course');
     }
 }
