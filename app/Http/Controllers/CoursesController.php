@@ -16,16 +16,15 @@ class CoursesController extends Controller {
         $course = $firestore->collection('courses')->document($request->course_id);
         if ($course->snapshot()->exists()) {
             $courseData = $course->snapshot()->data();
-            $interestedMembers = [];
-            if (isset($courseData['interestedMembers'])) {
-                $interestedMembers = $courseData['interestedMembers'];
-            }
-            if (!array_search($request->session()->get('userID'), $interestedMembers)) {
-                $interestedMembers[] = $request->session()->get('userID');
-            }
+
+            $interestedMembers = $this->addToArrayIfNeeded($request->session()->get('userID'), $courseData['interestedMembers']);
+            $uninterestedMembers = $this->removeFromArrayIfPossible($request->session()->get('userID'), $courseData['uninterestedMembers']);
+            $permanentMembers = $this->removeFromArrayIfPossible($request->session()->get('userID'), $courseData['permanentMembers']);
 
             $response = $course->set([
-                'interestedMembers' => $interestedMembers
+                'interestedMembers'   => $interestedMembers,
+                'uninterestedMembers' => $uninterestedMembers,
+                'permanentMembers'    => $permanentMembers
             ], ['merge' => true]);
             if (isset($response['updateTime'])) {
                 return 200;
@@ -45,36 +44,15 @@ class CoursesController extends Controller {
         $course = $firestore->collection('courses')->document($request->course_id);
         if ($course->snapshot()->exists()) {
             $courseData = $course->snapshot()->data();
-            $uninterestedMembers = [];
-            if (isset($courseData['uninterestedMembers'])) {
-                $uninterestedMembers = $courseData['uninterestedMembers'];
-            }
-            if (!array_search($request->session()->get('userID'), $uninterestedMembers)) {
-                $uninterestedMembers[] = $request->session()->get('userID');
-            }
 
-            $interestedMembers = [];
-            if (isset($courseData['interestedMembers'])) {
-                $interestedMembers = $courseData['interestedMembers'];
-            }
-            $_array_pos = array_search($request->session()->get('userID'), $interestedMembers);
-            if ($_array_pos !== false) {
-                unset($interestedMembers[$_array_pos]);
-            }
-
-            $permanentMembers = [];
-            if (isset($courseData['permanentMembers'])) {
-                $permanentMembers = $courseData['permanentMembers'];
-            }
-            $_array_pos = array_search($request->session()->get('userID'), $permanentMembers);
-            if ($_array_pos !== false) {
-                unset($permanentMembers[$_array_pos]);
-            }
+            $interestedMembers = $this->removeFromArrayIfPossible($request->session()->get('userID'), $courseData['interestedMembers']);
+            $uninterestedMembers = $this->addToArrayIfNeeded($request->session()->get('userID'), $courseData['uninterestedMembers']);
+            $permanentMembers = $this->removeFromArrayIfPossible($request->session()->get('userID'), $courseData['permanentMembers']);
 
             $response = $course->set([
-                'uninterestedMembers' => $uninterestedMembers,
                 'interestedMembers'   => $interestedMembers,
-                'permanentMembers'    => $permanentMembers,
+                'uninterestedMembers' => $uninterestedMembers,
+                'permanentMembers'    => $permanentMembers
             ], ['merge' => true]);
             if (isset($response['updateTime'])) {
                 return 200;
@@ -84,7 +62,7 @@ class CoursesController extends Controller {
         abort(500, 'error while adding uninterested member to course');
     }
 
-    public function signupMember(Request $request) {
+    public function addPermanentMember(Request $request) {
         $request->validate([
             'course_id' => 'required|string|max:255',
         ]);
@@ -94,26 +72,15 @@ class CoursesController extends Controller {
         $course = $firestore->collection('courses')->document($request->course_id);
         if ($course->snapshot()->exists()) {
             $courseData = $course->snapshot()->data();
-            $interestedMembers = [];
-            if (isset($courseData['interestedMembers'])) {
-                $interestedMembers = $courseData['interestedMembers'];
-            }
-            $_array_pos = array_search($request->session()->get('userID'), $interestedMembers);
-            if ($_array_pos !== false) {
-                unset($interestedMembers[$_array_pos]);
-            }
 
-            $permanentMembers = [];
-            if (isset($courseData['permanentMembers'])) {
-                $permanentMembers = $courseData['permanentMembers'];
-            }
-            if (!array_search($request->session()->get('userID'), $permanentMembers)) {
-                $permanentMembers[] = $request->session()->get('userID');
-            }
+            $interestedMembers = $this->removeFromArrayIfPossible($request->session()->get('userID'), $courseData['interestedMembers']);
+            $uninterestedMembers = $this->removeFromArrayIfPossible($request->session()->get('userID'), $courseData['uninterestedMembers']);
+            $permanentMembers = $this->addToArrayIfNeeded($request->session()->get('userID'), $courseData['permanentMembers']);
 
             $response = $course->set([
-                'interestedMembers' => $interestedMembers,
-                'permanentMembers'  => $permanentMembers
+                'interestedMembers'   => $interestedMembers,
+                'uninterestedMembers' => $uninterestedMembers,
+                'permanentMembers'    => $permanentMembers
             ], ['merge' => true]);
             if (isset($response['updateTime'])) {
                 return 200;
@@ -133,17 +100,15 @@ class CoursesController extends Controller {
         $course = $firestore->collection('courses')->document($request->course_id);
         if ($course->snapshot()->exists()) {
             $courseData = $course->snapshot()->data();
-            $interestedMembers = [];
-            if (isset($courseData['interestedMembers'])) {
-                $interestedMembers = $courseData['interestedMembers'];
-            }
-            $_array_pos = array_search($request->session()->get('userID'), $interestedMembers);
-            if ($_array_pos !== false) {
-                unset($interestedMembers[$_array_pos]);
-            }
+
+            $interestedMembers = $this->removeFromArrayIfPossible($request->session()->get('userID'), $courseData['interestedMembers']);
+            $uninterestedMembers = $this->removeFromArrayIfPossible($request->session()->get('userID'), $courseData['uninterestedMembers']);
+            $permanentMembers = $this->removeFromArrayIfPossible($request->session()->get('userID'), $courseData['permanentMembers']);
 
             $response = $course->set([
-                'interestedMembers' => $interestedMembers,
+                'interestedMembers'   => $interestedMembers,
+                'uninterestedMembers' => $uninterestedMembers,
+                'permanentMembers'    => $permanentMembers
             ], ['merge' => true]);
             if (isset($response['updateTime'])) {
                 return 200;
@@ -163,26 +128,15 @@ class CoursesController extends Controller {
         $course = $firestore->collection('courses')->document($request->course_id);
         if ($course->snapshot()->exists()) {
             $courseData = $course->snapshot()->data();
-            $interestedMembers = [];
-            if (isset($courseData['interestedMembers'])) {
-                $interestedMembers = $courseData['interestedMembers'];
-            }
-            if (!array_search($request->session()->get('userID'), $interestedMembers)) {
-                $interestedMembers[] = $request->session()->get('userID');
-            }
 
-            $permanentMembers = [];
-            if (isset($courseData['permanentMembers'])) {
-                $permanentMembers = $courseData['permanentMembers'];
-            }
-            $_array_pos = array_search($request->session()->get('userID'), $permanentMembers);
-            if ($_array_pos !== false) {
-                unset($permanentMembers[$_array_pos]);
-            }
+            $interestedMembers = $this->addToArrayIfNeeded($request->session()->get('userID'), $courseData['interestedMembers']);
+            $uninterestedMembers = $this->removeFromArrayIfPossible($request->session()->get('userID'), $courseData['uninterestedMembers']);
+            $permanentMembers = $this->removeFromArrayIfPossible($request->session()->get('userID'), $courseData['permanentMembers']);
 
             $response = $course->set([
-                'interestedMembers' => $interestedMembers,
-                'permanentMembers'  => $permanentMembers
+                'interestedMembers'   => $interestedMembers,
+                'uninterestedMembers' => $uninterestedMembers,
+                'permanentMembers'    => $permanentMembers
             ], ['merge' => true]);
             if (isset($response['updateTime'])) {
                 return 200;
@@ -190,5 +144,29 @@ class CoursesController extends Controller {
         }
 
         abort(500, 'error while removing permanent member from course');
+    }
+
+    private function removeFromArrayIfPossible($needle, $source): array {
+        $dest = [];
+        if (isset($source)) {
+            $dest = $source;
+        }
+        while (in_array($needle, $dest)) {
+            unset($dest[array_search($needle, $dest)]);
+        }
+
+        return $dest;
+    }
+
+    private function addToArrayIfNeeded($needle, $source): array {
+        $dest = [];
+        if (isset($source)) {
+            $dest = $source;
+        }
+        if (!in_array($needle, $dest)) {
+            $dest[] = $needle;
+        }
+
+        return $dest;
     }
 }
