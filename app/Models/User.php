@@ -9,10 +9,8 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Passport\HasApiTokens;
-use LdapRecord\Laravel\Auth\LdapAuthenticatable;
-use LdapRecord\Laravel\Auth\AuthenticatesWithLdap;
 
-class User extends Authenticatable implements LdapAuthenticatable
+class User extends Authenticatable
 {
     use HasApiTokens;
     use HasFactory;

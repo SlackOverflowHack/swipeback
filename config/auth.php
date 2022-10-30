@@ -46,6 +46,10 @@ return [
             'provider' => 'users',
 //            'hash' => false,
         ],
+
+        'fireuser' => [
+            'driver' => 'fireuser'
+        ]
     ],
 
     /*
@@ -68,7 +72,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\User::class,
+            'model' => App\FireUser::class,
         ],
 
         // 'users' => [

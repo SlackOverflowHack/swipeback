@@ -18,13 +18,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('throttle:clientApp')->post('login', 'App\Http\Controllers\ApiController@createApiToken');
 
-Route::prefix('user')->middleware('throttle:clientApp')->group(function() {
+Route::prefix('user')->middleware('session', 'throttle:clientApp')->group(function() {
 
     Route::post('register', [UsersController::class, 'register']);
 
-    Route::middleware('auth:api')->group(function() {
-        Route::get('/', function (Request $request) {
-            return $request->user();
+    Route::middleware('auth:fireuser')->group(function() {
+        Route::get('/id', function (Request $request) {
+            return $request->session()->get('userID');
         });
     });
 });
